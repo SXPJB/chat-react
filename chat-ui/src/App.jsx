@@ -1,13 +1,20 @@
 import React from 'react';
-import {io} from "socket.io-client";
-
-const socket = io('http://localhost:4000')
+import NavBar from "./components/NavBarComponent.jsx";
+import {Col, Container, Row} from "react-bootstrap";
+import ChatViewComponent from "./components/ChatViewComponent.jsx";
 
 const App = () => {
     return (
-        <h1>
-            Hello world!
-        </h1>
+        <>
+            <NavBar/>
+            <Container className='mt-2'>
+                <Row>
+                    <Col>
+                        <ChatViewComponent/>
+                    </Col>
+                </Row>
+            </Container>
+        </>
     );
 };
 

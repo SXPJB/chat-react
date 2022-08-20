@@ -8,21 +8,27 @@ import http from "http";
 const app = express()
 const server = http.createServer(app)
 const io = new SocketServer(server, {
-    cors:{
+    cors: {
         origin: '*'
     }
 })
 
 const onConnection = socket => {
-    console.log("New user connected",socket.id)
+    console.log("New user connected", socket.id)
+    socket.on('message', message => {
+        console.log(message)
+        socket.broadcast.emit('message',{
+            ...message,
+            from:'Anonymous'
+        })
+    })
 }
 
 io.on("connection", onConnection)
-
 
 app.use(cors())
 app.use(morgan('dev'))
 
 server.listen(PORT,
-    ()=> console.log(`Server started on port ${PORT}` )
+    () => console.log(`Server started on port ${PORT}`)
 )
