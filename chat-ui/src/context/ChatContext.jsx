@@ -1,7 +1,9 @@
 import {createContext, useContext, useState} from "react";
 import {io} from "socket.io-client";
+import moment from "moment";
+import fa from "moment/locale/fa.js";
 
-const socket = io('http://localhost:4000')
+const socket = io('http://localhost:4000', )
 
 const ChatContext = createContext()
 
@@ -13,45 +15,65 @@ export const useChatContext = () => {
     return chatContext
 }
 
-
-const toHHMM = (date) => {
-    let hh = date.getHours();
-    let mm = date.getMinutes();
-    const ampm = hh >= 12 ? 'pm' : 'am';
-    hh = hh % 12;
-    hh = hh ? hh : 12;
-    mm = mm < 10 ? '0' + mm : mm;
-    return hh + ':' + mm + ' ' + ampm;
-}
-
 export const ChatProvider = ({children}) => {
-    const [chats,setChats] = useState([])
+    const [chats, setChats] = useState([])
+    const [user, setUser] = useState({
+        id:null,
+        nickname:''
+    })
+    const [show, setShow] = useState(false);
+    const hideModal = () => setShow(false)
+    const showModal = () => setShow(true)
 
-    const loadChats = ()=>{
-        socket.on('message', message=>{
+    const login = user => {
+        socket.emit('login',user)
+        socket.on('login', user=>{
+            setUser(user)
+            hideModal()
+        })
+        socket.on('userFound',response=>{
+            alert(response)
+        })
+    }
+
+    const logout = () => {
+        socket.emit('logout', user)
+        socket.on('logout',user =>{
+            console.log("USer",user)
+            setUser({
+                id:null,
+                nickname:''
+            })
+        })
+    }
+
+    const loadChats = () => {
+        socket.on('message', message => {
             console.log(message)
             setChats([message, ...chats])
         })
     }
 
-    const sendMessage = message =>{
+    const sendMessage = message => {
         const newMessage = {
             body: message,
             from: 'Me',
-            time: toHHMM(new Date())
+            time: moment().format("HH:mm a")
         }
-        socket.emit('message',newMessage)
-        setChats([newMessage,...chats])
+        socket.emit('message', newMessage)
+        setChats([newMessage, ...chats])
     }
 
     return <ChatContext.Provider value={{
         chats,
-        user: {
-            id: '123123123',
-            nickname: 'Emmanuel'
-        },
+        user,
+        show,
         loadChats,
-        sendMessage
+        sendMessage,
+        login,
+        hideModal,
+        showModal,
+        logout,
     }}>
         {children}
     </ChatContext.Provider>

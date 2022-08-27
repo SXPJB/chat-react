@@ -3,9 +3,9 @@ import {Button, Container, Navbar} from "react-bootstrap";
 import {useChatContext} from "../context/ChatContext.jsx";
 
 const NavBar = () =>{
-    const {user} = useChatContext()
-    const {id, nickname } = user
-    console.log(id)
+    const {user,logout,showModal} = useChatContext()
+    const {nickname } = user
+
     return(
         <Navbar bg="dark" variant="dark">
             <Container fluid>
@@ -14,8 +14,10 @@ const NavBar = () =>{
                 <Navbar.Collapse
                     className='justify-content-end'>
                     <Button
-                        variant='outline-success'>
-                        Login
+                        variant={!user.id ? 'outline-success': 'outline-danger'}
+                        onClick={!user.id ? showModal : logout}
+                    >
+                        {!user.id? 'Login': 'Logout'}
                     </Button>
                 </Navbar.Collapse>
             </Container>
