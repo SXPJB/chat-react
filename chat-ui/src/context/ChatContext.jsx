@@ -1,9 +1,8 @@
 import {createContext, useContext, useState} from "react";
 import {io} from "socket.io-client";
 import moment from "moment";
-import fa from "moment/locale/fa.js";
 
-const socket = io('http://localhost:4000', )
+const socket = io('/', )
 
 const ChatContext = createContext()
 
